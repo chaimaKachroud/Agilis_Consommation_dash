@@ -1,24 +1,7 @@
-import streamlit as st
 import pandas as pd
-
-
-st.set_page_config(page_title="DataFrame Demo", page_icon="📊")
-
-st.markdown("# DataFrames")
-st.sidebar.header("DataFrames")
-st.write(
-    """ 
-    
-    """
-)
-@st.cache_data
-def load_data(file_name,sheet_name,engine):
-    df= pd.read_excel(file_name, sheet_name=sheet_name, engine=engine)
-    return df
-
-data = load_data('./Agilis_DashBoard/Agilis_Consommation_dash/data/transactions.xlsx','All',"openpyxl")
-
-# --- Pretraitement
+#---- load data
+data = pd.read_excel('transaction 2022.xlsx', sheet_name='All', engine="openpyxl")
+#---- Pretraitement
 data.rename(columns={'Quantit�': 'quantite'}, inplace=True)
 data.rename(columns={'Type transaction': 'transaction'}, inplace=True)
 data.rename(columns={'Numéro carte': 'ncarte'}, inplace=True)
@@ -43,13 +26,9 @@ data['quantite'] = data[['quantite']].astype(float)
 data['kilometrage'] = data['kilometrage'].str.replace(r',', '.')
 data['kilometrage'] = data['kilometrage'].str.replace(r' ', '')
 data['kilometrage'] = data[['kilometrage']].astype(float)
-#st.dataframe(data)
-#---  Filter 
-@st.cache_data
-def filter(df):
-    df = df[(data.transaction == "Achat PR")]
-    return df
-achat = filter(data)
+# Filter
+achat = data[(data.transaction == "Achat PR")]
+
 # input data
 list_of_dates = achat['date']
 
@@ -65,10 +44,4 @@ date_gen = (getattr(df['date'].dt, i).rename(i) for i in L)
 achat = achat.join(pd.concat(date_gen, axis=1))
 achat['mois'] = pd.to_datetime(achat['date']).dt.strftime('%Y%m')
 achat['prixUnitaire']= (achat.cout / achat.quantite).round(decimals=3)
-#st.write(achat)
-ConsommationProduitAnnee = pd.pivot_table(achat, index='produit', columns='year', values=['quantite'], aggfunc='sum',margins=True, margins_name="Total")
-ConsommationProduitAnnee = pd.DataFrame(ConsommationProduitAnnee.to_records())
-ConsommationProduitAnnee.columns = (['Produit', 2021, 2022, 2023, 'Total'])
-ConsommationProduitAnnee.set_index('Produit', inplace=True)
-st.dataframe(ConsommationProduitAnnee)
 

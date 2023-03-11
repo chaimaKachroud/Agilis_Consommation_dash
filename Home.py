@@ -32,3 +32,5 @@ col3.metric("Humidity", "86%", "4%")
 col4.metric("unknown", "45%", "10%")
 
 
+
+

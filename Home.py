@@ -1,7 +1,7 @@
 # Import library
 import streamlit as st
 import pandas as pd
-from numerize.numerize import numerize
+#from numerize.numerize import numerize
 #from PIL import Image
 #import streamlit.components.v1 as components
 
